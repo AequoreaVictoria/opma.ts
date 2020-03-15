@@ -2,3 +2,5 @@
 .idea
 /tmp/
 /node_modules/
+/out/
+/zig-cache/

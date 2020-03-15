@@ -1,36 +1,68 @@
-# OPMA.ts
+# OPMA
 Copyright © Crystal Jelly
 
-Released under MIT License.
+Released under 0BSD License.
 
-## psg.ts
+This applies to all files unless specified below.
+
+You may do anything with this code without having to provide credit. Hooray!
+
+## src/psg.zig
+Copyright © Crystal Jelly
+
 Based upon Ayumi: Copyright © Peter Sovietov
 
 Released under MIT License.
 
-## scc.ts
+## src/scc.zig
+Copyright © Crystal Jelly
+
 Based upon MAME: Copyright © Bryan McPhail
 
 Released under 3-Clause BSD License.
 
-## opm.ts
+## src/opm.zig
+Copyright © Crystal Jelly
+
 Based upon FMGen: Copyright © cisc
 
 Released under MIT License via Neko Project II Kai.
 
-## pcm.ts
+## src/pcm.zig
+Copyright © Crystal Jelly
+
 Based upon MAME: Copyright © Barry Rodewald
 
 Released under 3-Clause BSD License.
 
-## pako.js
-Based upon Pako: Copyright © Vitaly Puzrin and Andrei Tuputcyn
+## lib/libz
+Copyright © Jonas Termansen
 
-Released under MIT License.
- 
-It in turn is based upon Zlib: Copyright © Jean-loup Gailly and Mark Adler
+Based upon zlib: Copyright © Jean-loup Gailly and Mark Adler
 
-Released under the Zlib license.
+Released under the Zlib License.
+
+The version of libz bundled has been modified and stripped down for OPMA.zig.
+You may diff it against the libz release specified by the VERSION file. Any
+changes made to the Zlib licensed C code are covered under the same license
+and copyright notices listed above.
+
+## lib/libsoundio
+Copyright © 2015 Andrew Kelley
+
+Released under the MIT License.
+
+# 0BSD License
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
+RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
+USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # MIT License
 Permission is hereby granted, free of charge, to any person obtaining a
