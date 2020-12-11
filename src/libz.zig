@@ -15,7 +15,7 @@ pub fn openAndInflate(heap: *Allocator, fileName: []u8) ![]u8 {
     const file = try fs.openFileAbsolute(filePath, .{
         .read = true,
         .write = false,
-        .always_blocking = false
+        .lock_nonblocking = false
     });
     defer file.close();
 
@@ -87,7 +87,7 @@ pub fn openAndInflate(heap: *Allocator, fileName: []u8) ![]u8 {
         .state = &state,
         .zalloc = null,
         .zfree = null,
-        .opaque = null,
+        .@"opaque" = null,
         .data_type = libz.Z_BINARY,
         .adler = 0,
         .reserved = 0,

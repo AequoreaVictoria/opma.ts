@@ -57,8 +57,8 @@ fn addCFiles(
     name: []const u8,
     b: *Builder,
     exe: *LibExeObjStep,
-    cFlags: [][]const u8,
-    files: [][]const u8
+    cFlags: []const []const u8,
+    files: []const []const u8
 ) void {
     const includePath = path.join(
         b.allocator, &[_][]const u8{"lib", name}

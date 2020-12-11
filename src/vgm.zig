@@ -81,7 +81,8 @@ pub const VGM = struct {
         var gd3Length: u32 = undefined;
         var gd3Tags: GD3Utf8 = undefined;
         if (gd3Offset == 0) {
-            const empty = &[1:0]u8{0};
+            const empty_data = &[1:0]u8{0};
+            const empty = empty_data[0..0];
             gd3Version = 0;
             gd3Length = 0;
             gd3Tags = GD3Utf8 {
@@ -151,8 +152,7 @@ pub const VGM = struct {
                     .trackAuthorJp => trackAuthorJpLen += 1,
                     .releaseDate => releaseDateLen += 1,
                     .convertedBy => convertedByLen += 1,
-                    .notes => notesLen += 1,
-                    else => unreachable
+                    .notes => notesLen += 1
                 }
                 if (char == 0) tag += 1;
                 i += 2;
@@ -197,8 +197,7 @@ pub const VGM = struct {
                     .trackAuthorJp => trackAuthorJp[pos] = char,
                     .releaseDate => releaseDate[pos] = char,
                     .convertedBy => convertedBy[pos] = char,
-                    .notes => notes[pos] = char,
-                    else => unreachable
+                    .notes => notes[pos] = char
                 }
                 if (char == 0) {
                     tag += 1;
