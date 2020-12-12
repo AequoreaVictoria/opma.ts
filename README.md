@@ -54,10 +54,7 @@ The emulation of these components is based upon prior work:
 * OKIM6258 is based on [MAME][15].
 
 ## Compiling
-You will need the [Zig][17] compiler installed, as well as [libsoundio][18].
-
-In the future, [libsoundio][18] may be moved in-tree. Ideally there are no
-external dependencies.
+You will need the [Zig][17] compiler installed.
 
 This has not been tested outside of Linux yet!
 
@@ -117,7 +114,6 @@ obtained from here and never claim that you originally wrote it. Not very hard.
 [15]: https://www.mamedev.org/
 [16]: http://retropc.net/cisc/m88/download.html
 [17]: https://ziglang.org/
-[18]: http://libsound.io/
 [19]: https://opensource.org/licenses/0BSD
 [20]: https://github.com/AequoreaVictoria/opma/blob/master/LICENSE.md
 [21]: https://opensource.org/licenses/ISC

@@ -12,7 +12,7 @@ const scc = @import("scc.zig");
 const opm = @import("opm.zig");
 const pcm = @import("pcm.zig");
 const sio = @cImport({
-    @cInclude("soundio/soundio.h");
+    @cInclude("soundio.h");
 });
 
 const MASTER_RATE = 44100; // Required by VGM standard
