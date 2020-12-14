@@ -7,63 +7,61 @@ pub const Chip = struct {
     tone: [3]ToneChannel,
     noise: NoiseChannel,
     envelope: Envelope,
-    firFilter: FIRFilter,
-    dcFilter: DCFilter,
-    dacTable: [32]f64,
+    fir_filter: FIRFilter,
+    dc_filter: DCFilter,
+    dac_table: [32]f64,
     step: f64,
     x: f64,
     output: f64,
     const Self = @This();
 
-    pub fn init(clockRate: u32, sampleRate: u32) Self {
-        return Self {
+    pub fn init(clock: u32, sample_rate: u32) Self {
+        return Self{
             .register = [_]u16{0} ** 14,
-            .tone = [_]ToneChannel {
-                ToneChannel {
-                    .period = 1,
-                    .counter = 0,
-                    .tone = 0,
-                    .volume = 0,
-                    .tOff = 0,
-                    .nOff = 0,
-                    .eOn = 0,
-                }
-            } ** 3,
-            .noise = NoiseChannel {
+            .tone = [_]ToneChannel{ToneChannel{
+                .period = 1,
+                .counter = 0,
+                .tone = 0,
+                .volume = 0,
+                .t_off = 0,
+                .n_off = 0,
+                .e_on = 0,
+            }} ** 3,
+            .noise = NoiseChannel{
                 .period = 0,
                 .counter = 0,
                 .noise = 1,
             },
-            .envelope = Envelope {
+            .envelope = Envelope{
                 .period = 1,
                 .counter = 0,
                 .envelope = 0,
                 .shape = 0,
                 .segment = 0,
-                .table = [16][2]fn(*Envelope) void {
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.holdBottom},
+                .table = [16][2]fn (*Envelope) void{
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.holdBottom },
 
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.holdBottom},
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.holdBottom },
 
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.slideDown},
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.holdBottom},
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.slideUp},
-                    [2]fn(*Envelope) void {Envelope.slideDown, Envelope.holdTop},
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.slideDown },
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.holdBottom },
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.slideUp },
+                    [2]fn (*Envelope) void{ Envelope.slideDown, Envelope.holdTop },
 
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.slideUp},
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.holdTop},
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.slideDown},
-                    [2]fn(*Envelope) void {Envelope.slideUp, Envelope.holdBottom},
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.slideUp },
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.holdTop },
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.slideDown },
+                    [2]fn (*Envelope) void{ Envelope.slideUp, Envelope.holdBottom },
                 },
             },
-            .firFilter = FIRFilter {
-                .interpolator = FIRFilter.Interpolator {
+            .fir_filter = FIRFilter{
+                .interpolator = FIRFilter.Interpolator{
                     .c = [_]f64{0} ** 4,
                     .y = [_]f64{0} ** 4,
                 },
@@ -71,33 +69,33 @@ pub const Chip = struct {
                 .index = 0,
                 .result = 0.0,
             },
-            .dcFilter = DCFilter {
-                .output = DCFilter.DCOutput {
+            .dc_filter = DCFilter{
+                .output = DCFilter.DCOutput{
                     .sum = 0.0,
                     .delay = [_]f64{0} ** DC_FILTER_SIZE,
                 },
                 .index = 0,
                 .result = 0.0,
             },
-            .dacTable = [32]f64 { // YM2149 DAC Table
-                0.0, 0.0,
+            .dac_table = [32]f64{ // YM2149 DAC Table
+                0.0,              0.0,
                 0.00465400167849, 0.00772106507973,
-                0.0109559777218, 0.0139620050355,
-                0.0169985503929, 0.0200198367285,
-                0.024368657969, 0.029694056611,
-                0.0350652323186, 0.0403906309606,
-                0.0485389486534, 0.0583352407111,
-                0.0680552376593, 0.0777752346075,
-                0.0925154497597, 0.111085679408,
-                0.129747463188, 0.148485542077,
-                0.17666895552, 0.211551079576,
-                0.246387426566, 0.281101701381,
-                0.333730067903, 0.400427252613,
-                0.467383840696, 0.53443198291,
-                0.635172045472, 0.75800717174,
-                0.879926756695, 1.0
+                0.0109559777218,  0.0139620050355,
+                0.0169985503929,  0.0200198367285,
+                0.024368657969,   0.029694056611,
+                0.0350652323186,  0.0403906309606,
+                0.0485389486534,  0.0583352407111,
+                0.0680552376593,  0.0777752346075,
+                0.0925154497597,  0.111085679408,
+                0.129747463188,   0.148485542077,
+                0.17666895552,    0.211551079576,
+                0.246387426566,   0.281101701381,
+                0.333730067903,   0.400427252613,
+                0.467383840696,   0.53443198291,
+                0.635172045472,   0.75800717174,
+                0.879926756695,   1.0,
             },
-            .step = @intToFloat(f64, clockRate) / @intToFloat(f64, (sampleRate * 8 * DECIMATE_FACTOR)),
+            .step = @intToFloat(f64, clock) / @intToFloat(f64, (sample_rate * 8 * DECIMATE_FACTOR)),
             .x = 0.0,
             .output = 0,
         };
@@ -130,11 +128,11 @@ pub const Chip = struct {
     }
 
     pub fn process(s: *Self) void {
-        var fir = &(s.firFilter);
+        var fir = &(s.fir_filter);
         var c = fir.interpolator.c;
         var y = fir.interpolator.y;
         var y1: f64 = undefined;
-        var output = fir.output[(FIR_SIZE - fir.index * DECIMATE_FACTOR) .. fir.output.len];
+        var output = fir.output[(FIR_SIZE - fir.index * DECIMATE_FACTOR)..fir.output.len];
         fir.index = (fir.index + 1) % (FIR_SIZE / DECIMATE_FACTOR - 1);
 
         var i: usize = DECIMATE_FACTOR - 1;
@@ -155,9 +153,9 @@ pub const Chip = struct {
                 while (channel < 3) : (channel += 1) {
                     const t = &(s.tone[channel]);
                     t.update();
-                    var out = (t.tone | t.tOff) & ((s.noise.noise & 1) | t.nOff);
-                    out *= if (t.eOn != 0) s.envelope.envelope else t.volume * 2 + 1;
-                    s.output += s.dacTable[@intCast(usize, out)];
+                    var out = (t.tone | t.t_off) & ((s.noise.noise & 1) | t.n_off);
+                    out *= if (t.e_on != 0) s.envelope.envelope else t.volume * 2 + 1;
+                    s.output += s.dac_table[@intCast(usize, out)];
                 }
 
                 y[3] = s.output;
@@ -177,8 +175,8 @@ pub const Chip = struct {
     }
 
     pub fn removeDc(s: *Self) void {
-        s.dcFilter.process(s.output);
-        s.output = s.dcFilter.result;
+        s.dc_filter.process(s.output);
+        s.output = s.dc_filter.result;
     }
 };
 
@@ -186,22 +184,22 @@ const ToneChannel = struct {
     period: i32,
     counter: i32,
     tone: i32,
-    tOff: i32,
-    nOff: i32,
-    eOn: i32,
+    t_off: i32,
+    n_off: i32,
+    e_on: i32,
     volume: i32,
     const Self = @This();
 
     fn setTone(s: *Self, period: i32) void {
-        const newPeriod = period & 0xfff;
-        const p: i32 = if (newPeriod == 0) 1 else 0;
-        s.period = p | newPeriod;
+        const new_period = period & 0xfff;
+        const p: i32 = if (new_period == 0) 1 else 0;
+        s.period = p | new_period;
     }
 
-    fn setMixer(s: *Self, tOff: i32, nOff: i32, eOn: i32) void {
-        s.tOff = tOff & 1;
-        s.nOff = nOff & 1;
-        s.eOn = eOn;
+    fn setMixer(s: *Self, t_off: i32, n_off: i32, e_on: i32) void {
+        s.t_off = t_off & 1;
+        s.n_off = n_off & 1;
+        s.e_on = e_on;
     }
 
     fn setVolume(s: *Self, volume: i32) void {
@@ -243,13 +241,13 @@ const Envelope = struct {
     envelope: i32,
     shape: i32,
     segment: i32,
-    table: [16][2]fn(*Self) void,
+    table: [16][2]fn (*Self) void,
     const Self = @This();
 
     fn setEnvelope(s: *Self, period: i32) void {
-        const newPeriod = period & 0xffff;
-        const p: i32 = if (newPeriod == 0) 1 else 0;
-        s.period = p | newPeriod;
+        const new_period = period & 0xffff;
+        const p: i32 = if (new_period == 0) 1 else 0;
+        s.period = p | new_period;
     }
 
     fn setEnvelopeShape(s: *Self, shape: i32) void {
@@ -261,9 +259,9 @@ const Envelope = struct {
 
     fn resetSegment(s: *Self) void {
         const envelope = s.table[@intCast(usize, s.shape)][@intCast(usize, s.segment)];
-        const slideDownPtr = @ptrToInt(envelope) == @ptrToInt(slideDown);
-        const holdTopPtr = @ptrToInt(envelope) == @ptrToInt(holdTop);
-        s.envelope = if (slideDownPtr or holdTopPtr) 31 else 0;
+        const slide_down_ptr = @ptrToInt(envelope) == @ptrToInt(slideDown);
+        const hold_top_ptr = @ptrToInt(envelope) == @ptrToInt(holdTop);
+        s.envelope = if (slide_down_ptr or hold_top_ptr) 31 else 0;
     }
 
     fn slideUp(s: *Self) void {
@@ -395,7 +393,9 @@ const FIRFilter = struct {
             0.12176343577287731 * (x[95] + x[97]) +
             0.125 * x[96];
         var i: usize = 0;
-        while (i < DECIMATE_FACTOR) : (i += 1) { x[FIR_SIZE - DECIMATE_FACTOR + i] = x[i]; }
+        while (i < DECIMATE_FACTOR) : (i += 1) {
+            x[FIR_SIZE - DECIMATE_FACTOR + i] = x[i];
+        }
         s.result = y;
     }
 };

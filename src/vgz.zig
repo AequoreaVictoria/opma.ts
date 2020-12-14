@@ -10,12 +10,12 @@ pub fn openAndInflate(heap: *Allocator, file_name: []u8) ![]u8 {
     const file = try fs.openFileAbsolute(file_path, .{
         .read = true,
         .write = false,
-        .lock_nonblocking = false
+        .lock_nonblocking = false,
     });
     defer file.close();
 
     const file_size = try file.getEndPos();
-    if (file_size == 0) return error.fileEmpty;
+    if (file_size == 0) return error.FileEmpty;
 
     // Return file it if it is uncompressed.
     const file_reader = file.reader();

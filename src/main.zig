@@ -28,33 +28,31 @@ pub fn main() !void {
     defer process.argsFree(heap, args);
     if (args.len == 1) die();
 
-    var writeFile: bool = false;
-    var loopCount: ?u32 = null;
+    var write_file: bool = false;
+    var loop_count: ?u32 = null;
     var files = try heap.alloc([]u8, args.len - 1);
     defer heap.free(files);
 
     var i: u32 = 1;
     var f: u32 = 0;
     while (i < args.len) {
-        if (
-            mem.eql(u8, args[i], "-write") or
+        if (mem.eql(u8, args[i], "-write") or
             mem.eql(u8, args[i], "-w") or
             mem.eql(u8, args[i], "--write") or
-            mem.eql(u8, args[i], "--w")
-        ) {
-            if (writeFile) {
+            mem.eql(u8, args[i], "--w"))
+        {
+            if (write_file) {
                 print("\nERROR: -write specified more than once!\n", .{});
                 die();
             }
-            writeFile = true;
+            write_file = true;
             i += 1;
-        } else if (
-            mem.eql(u8, args[i], "-loop") or
+        } else if (mem.eql(u8, args[i], "-loop") or
             mem.eql(u8, args[i], "-l") or
             mem.eql(u8, args[i], "--loop") or
-            mem.eql(u8, args[i], "--l")
-        ) {
-            if (loopCount != null) {
+            mem.eql(u8, args[i], "--l"))
+        {
+            if (loop_count != null) {
                 print("\nERROR: -loop specified more than once!\n", .{});
                 die();
             }
@@ -62,7 +60,7 @@ pub fn main() !void {
                 print("\nERROR: -loop was not given an argument!\n", .{});
                 die();
             }
-            loopCount = try fmt.parseUnsigned(u32, args[i + 1], 10);
+            loop_count = try fmt.parseUnsigned(u32, args[i + 1], 10);
             i += 2;
         } else if (args[i][0] == '-') {
             print("\nERROR: -command unknown!\n", .{});
@@ -74,10 +72,10 @@ pub fn main() !void {
         }
     }
 
-    if (loopCount == null) loopCount = 3;
-    var fileList = files[0..f]; // We overallocated due to -loop and -write.
+    if (loop_count == null) loop_count = 3;
+    var file_list = files[0..f]; // We overallocated due to -loop and -write.
 
-    if (loopCount) |count| {
-        try player.start(heap, fileList, writeFile, count);
+    if (loop_count) |count| {
+        try player.start(heap, file_list, write_file, count);
     } else unreachable;
 }

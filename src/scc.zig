@@ -12,55 +12,52 @@ const AMP_SIZE = (AMP_LOOKUP * 2) + 1;
 
 pub const Chip = struct {
     voice: [VOICES]Channel,
-    ampTable: [AMP_SIZE]i16,
+    amp_table: [AMP_SIZE]i16,
     output: f64,
     const Self = @This();
 
-    pub fn init(clock: u32, sampleRate: u32) Self {
-        var chip = Chip {
-            .voice = [_]Channel {
-                Channel {
-                    .period = 0,
-                    .counter = 0,
-                    .waveform = [_]i8{0} ** 32,
-                    .volume = 0,
-                    .mute = 0,
-                    .output = 0,
-                    .clock = 0,
-                    .rate = 0,
-                }
-            } ** VOICES,
-            .ampTable = [_]i16{0} ** AMP_SIZE,
+    pub fn init(clock: u32, sample_rate: u32) Self {
+        var chip = Chip{
+            .voice = [_]Channel{Channel{
+                .period = 0,
+                .counter = 0,
+                .waveform = [_]i8{0} ** 32,
+                .volume = 0,
+                .mute = 0,
+                .output = 0,
+                .clock = 0,
+                .rate = 0,
+            }} ** VOICES,
+            .amp_table = [_]i16{0} ** AMP_SIZE,
             .output = 0.0,
         };
 
         var channel: usize = 0;
-        const channelClock = clock & 0x7FFFFFFF;
-        const channelRate = channelClock / 16;
+        const channel_clock = clock & 0x7FFFFFFF;
+        const channel_rate = channel_clock / 16;
         while (channel < VOICES) : (channel += 1) {
-            chip.voice[channel].clock = channelClock;
-            chip.voice[channel].rate = channelRate;
+            chip.voice[channel].clock = channel_clock;
+            chip.voice[channel].rate = channel_rate;
         }
 
         var i: u32 = 0;
         while (i < AMP_LOOKUP) : (i += 1) {
             var value = (AMP_LOOKUP - i) * DEF_GAIN * 16 / VOICES;
             if (value > 32767) value = 32767;
-            const negativeValue = math.negateCast(@intCast(i16, value))
-                catch |err| panic("ERROR: {}", .{err});
-            chip.ampTable[i] = negativeValue;
+            const negative_value = math.negateCast(@intCast(i16, value)) catch |err| panic("ERROR: {}", .{err});
+            chip.amp_table[i] = negative_value;
         }
         i = 0;
         while (i < (AMP_LOOKUP + 1)) : (i += 1) {
             var value = i * DEF_GAIN * 16 / VOICES;
             if (value > 32767) value = 32767;
-            chip.ampTable[AMP_LOOKUP + i] = @intCast(i16, value);
+            chip.amp_table[AMP_LOOKUP + i] = @intCast(i16, value);
         }
 
         return chip;
     }
 
-    pub fn writeRegister(s: *Self, port:u8, register: u8, data: u8) void {
+    pub fn writeRegister(s: *Self, port: u8, register: u8, data: u8) void {
         switch (port) {
             // SCC mode waveform write
             0 => {
@@ -76,7 +73,7 @@ pub const Chip = struct {
             2 => s.voice[register & 0x7].setVolume(data),
             3 => {
                 var d = data;
-                var channel: u3  = 0;
+                var channel: u3 = 0;
                 while (channel < VOICES) : (channel += 1) {
                     s.voice[channel].setMute(d);
                     d >>= 1;
@@ -85,7 +82,7 @@ pub const Chip = struct {
             // SCC-I mode waveform write
             4 => s.voice[register >> 5].setWaveform(register, data),
             5 => {}, // Test register not implemented
-            else => unreachable
+            else => unreachable,
         }
     }
 
@@ -98,7 +95,7 @@ pub const Chip = struct {
             mixer += s.voice[channel].output;
         }
 
-        const tone = s.ampTable[@intCast(usize, AMP_LOOKUP + mixer)];
+        const tone = s.amp_table[@intCast(usize, AMP_LOOKUP + mixer)];
         s.output = @intToFloat(f64, tone);
     }
 };
@@ -148,9 +145,9 @@ const Channel = struct {
         const period = @intToFloat(f64, s.period);
         const rate = @intToFloat(f64, s.rate);
 
-        const clockShifted = @intToFloat(f64, clock * (1 << FREQ_BITS));
-        const rateShifted = ((period + 1) * 16 * (rate / 32) + 0.5);
-        const step = @floatToInt(u32, clockShifted / rateShifted);
+        const clock_shifted = @intToFloat(f64, clock * (1 << FREQ_BITS));
+        const rate_shifted = ((period + 1) * 16 * (rate / 32) + 0.5);
+        const step = @floatToInt(u32, clock_shifted / rate_shifted);
 
         s.counter += step;
         const address = (s.counter >> FREQ_BITS) & 0x1F;
