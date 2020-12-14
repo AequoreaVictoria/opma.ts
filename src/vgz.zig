@@ -5,7 +5,12 @@ const Allocator = std.mem.Allocator;
 const File = std.fs.File;
 
 pub fn openAndInflate(heap: *Allocator, file_name: []u8) ![]u8 {
-    var path_buf = [_]u8{0} ** 4096;
+    const buf_size = switch (std.Target.current.os.tag) {
+        .windows => 98302,
+        .linux => 4096,
+        else => unreachable
+    };
+    var path_buf = [_]u8{0} ** buf_size;
     var file_path = try fs.realpath(file_name, &path_buf);
     const file = try fs.openFileAbsolute(file_path, .{
         .read = true,

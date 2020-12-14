@@ -56,7 +56,7 @@ The emulation of these components is based upon prior work:
 ## Compiling
 You will need the [Zig][17] compiler installed.
 
-This has not been tested outside of Linux yet!
+This has been tested to work on Linux and Windows. Mac support forthcoming.
 
 ``` Shell
 $ zig build -Drelease-fast=true
