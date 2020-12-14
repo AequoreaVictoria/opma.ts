@@ -9,7 +9,6 @@
 #define SOUNDIO_SOUNDIO_PRIVATE_H
 
 #include "soundio_internal.h"
-#include "config.h"
 #include "list.h"
 
 #ifdef SOUNDIO_HAVE_JACK

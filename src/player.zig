@@ -4,9 +4,9 @@ const print = std.debug.warn;
 const process = std.process;
 const Allocator = std.mem.Allocator;
 const bitview = @import("bitview.zig");
-const libz = @import("libz.zig");
 const parser = @import("vgm.zig");
 const VGM = parser.VGM;
+const vgz = @import("vgz.zig");
 const psg = @import("psg.zig");
 const scc = @import("scc.zig");
 const opm = @import("opm.zig");
@@ -49,7 +49,7 @@ fn nextVGM() void {
         process.exit(0);
     }
 
-    const file = libz.openAndInflate(heap, state.files[state.filesIndex])
+    const file = vgz.openAndInflate(heap, state.files[state.filesIndex])
         catch panic("ERROR: Could not inflate file!", .{});
     vgm = parser.VGM.init(heap, &file)
         catch panic("ERROR: Could not parse VGM file!", .{});

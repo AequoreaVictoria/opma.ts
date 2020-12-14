@@ -87,13 +87,11 @@ arcade and computer emulators, those specific files are licensed the same way
 as their point of origin. See [LICENSE.md][20] for more information, which
 also contains the licensing information for the contents of `lib/`.
 
-In order of preference: Only [ISC][21], [MIT][22], [3BSD][23] (or lower!!)
-and [zlib][24] licensed libraries will be considered for inclusion in this
-project. This means at worst you must reproduce the relevant contents of
-[LICENSE.md][20] somewhere for the code you're reusing, you may be restricted
-from using the names of copyright holders for the purposes of marketing and if
-it's [libz][25] you must note if you have modified it from the code you
-obtained from here and never claim that you originally wrote it. Not very hard.
+In order of preference: Only [ISC][21], [MIT][22] and [3BSD][23] (or lower!!)
+licensed libraries will be considered for inclusion in this project. This means
+at worst you must reproduce the relevant contents of [LICENSE.md][20] somewhere
+for the code you're reusing and you may be restricted from using the names of
+copyright holders for the purposes of marketing. Not very hard.
 
 
 [0]: https://en.wikipedia.org/wiki/Yamaha_YM2608
@@ -119,6 +117,3 @@ obtained from here and never claim that you originally wrote it. Not very hard.
 [21]: https://opensource.org/licenses/ISC
 [22]: https://opensource.org/licenses/MIT
 [23]: https://opensource.org/licenses/BSD-3-Clause
-[24]: https://opensource.org/licenses/Zlib
-[25]: https://sortix.org/libz/
-

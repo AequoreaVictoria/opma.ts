@@ -35,18 +35,6 @@ Based upon MAME: Copyright © Barry Rodewald
 
 Released under 3-Clause BSD License.
 
-## lib/libz
-Copyright © Jonas Termansen
-
-Based upon zlib: Copyright © Jean-loup Gailly and Mark Adler
-
-Released under the Zlib License.
-
-The version of libz bundled has been modified and stripped down for OPMA.zig.
-You may diff it against the libz release specified by the VERSION file. Any
-changes made to the Zlib licensed C code are covered under the same license
-and copyright notices listed above.
-
 ## lib/libsoundio
 Copyright © 2015 Andrew Kelley
 
@@ -108,20 +96,3 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-# Zlib License
-This software is provided 'as-is', without any express or implied
-warranty. In no event will the authors be held liable for any damages
-arising from the use of this software.
-
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it
-freely, subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; you must not
-   claim that you wrote the original software. If you use this software
-   in a product, an acknowledgment in the product documentation would be
-   appreciated but is not required.
-2. Altered source versions must be plainly marked as such, and must not be
-   misrepresented as being the original software.
-3. This notice may not be removed or altered from any source distribution.
