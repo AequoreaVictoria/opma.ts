@@ -1,4 +1,5 @@
 const std = @import("std");
+const Mode = std.builtin.Mode;
 
 pub fn build(b: *std.build.Builder) !void {
     // workaround for windows not having Visual Studio installed.
@@ -66,7 +67,8 @@ pub fn build(b: *std.build.Builder) !void {
         if (coreaudio) {
             lib.addCSourceFile(root ++ "/coreaudio.c", &cflags);
             lib.defineCMacro("SOUNDIO_HAVE_COREAUDIO");
-            @panic("MacOS support not implemented!");
+            lib.linkSystemLibrary("CoreAudio");
+            lib.linkSystemLibrary("Audiotoolbox");
         }
         if (wasapi) {
             lib.addCSourceFile(root ++ "/wasapi.c", &cflags);
@@ -77,6 +79,9 @@ pub fn build(b: *std.build.Builder) !void {
         lib.linkLibC();
         lib.linkSystemLibrary("m");
         lib.addIncludeDir(root);
+
+        if (lib.build_mode == Mode.ReleaseSmall or lib.build_mode == Mode.ReleaseFast) lib.strip = true;
+        lib.single_threaded = true;
 
         break :blk lib;
     };
@@ -92,13 +97,19 @@ pub fn build(b: *std.build.Builder) !void {
         if (jack) exe.linkSystemLibrary("jack");
         if (pulseaudio) exe.linkSystemLibrary("libpulse");
         if (alsa) exe.linkSystemLibrary("alsa");
-        if (coreaudio) @panic("MacOS support not implemented!");
+        if (coreaudio) {
+            exe.linkSystemLibrary("CoreAudio");
+            exe.linkSystemLibrary("Audiotoolbox");
+        }
         if (wasapi) {
             exe.linkSystemLibrary("uuid");
             exe.linkSystemLibrary("ole32");
         }
         exe.linkLibrary(libsoundio);
         exe.addIncludeDir("./lib/libsoundio");
+
+        if (exe.build_mode == Mode.ReleaseSmall or exe.build_mode == Mode.ReleaseFast) exe.strip = true;
+        exe.single_threaded = true;
 
         exe.install();
     }

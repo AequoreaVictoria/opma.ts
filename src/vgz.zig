@@ -8,6 +8,7 @@ pub fn openAndInflate(heap: *Allocator, file_name: []u8) ![]u8 {
     const buf_size = switch (std.Target.current.os.tag) {
         .windows => 98302,
         .linux => 4096,
+        .macos => 4096,
         else => unreachable
     };
     var path_buf = [_]u8{0} ** buf_size;
